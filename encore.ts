@@ -1,4 +1,5 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
+// Import environment configuration
+import './config';
 
-console.log(process.env.PAWAPAY_BASE_URL + "Here"); //https://api.pawapay.com/v1
+// This file serves as the main entry point for your Encore application
+// Add any global Encore configuration here if needed

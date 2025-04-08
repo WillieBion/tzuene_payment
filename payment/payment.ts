@@ -4,14 +4,12 @@ import { createDeposit } from "../resources/payout";
 import { generateUUID, responseHandler } from "../resources/functions";
 import { sendTicketEmail } from "../email/email";
 import axios from "axios";
-import * as dotenv from 'dotenv';
 import { ResponseDTO } from "../types/responseDTO";
 import HttpStatus from "../resources/httpStatusCode";
 import { prismaDBPrimary } from "../resources/appResources";
 import { Status, Tickets, TicketStatus } from "@prisma/client";
 import { Ticket } from "../types/tickets";
-dotenv.config();
-
+import { env } from '../config';
 
 interface Request {
     amount: string
@@ -21,12 +19,11 @@ interface Request {
     tickets: Ticket[]
 }
 
-
-
-
 //Will need to change to Asyncronous implement
 export const payment = api({
-    method: 'POST', path: '/tzuene/payment', expose: true
+    method: 'POST', 
+    path: '/tzuene/payment', 
+    expose: true,
 }, async (payload: Request): Promise<ResponseDTO<PawaPayResponseDTO>> => {
     //Get payOut object
     const transactionId = generateUUID();
@@ -37,8 +34,8 @@ export const payment = api({
 
     //Call the PawaPay API
 
-    const URL = `${process.env.PAWAPAY_BASE_URL}/deposits`;
-    const token = process.env.PAWAPAY_DEV_TOKEN;
+    const URL = `${env.PAWAPAY_BASE_URL}/deposits`;
+    const token = env.PAWAPAY_DEV_TOKEN;
 
     console.log("URL", URL);
     // console.log("Token", token);
