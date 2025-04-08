@@ -1,13 +1,9 @@
 import * as dotenv from 'dotenv';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { resolve } from 'path';
 
 // Load environment variables from .env file
 dotenv.config({
-    path: resolve(__dirname, '.env')
+    path: resolve(process.cwd(), '.env')
 });
 
 // Export configured environment for use in other files
