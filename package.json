@@ -24,6 +24,7 @@
     "nodemailer": "^6.10.0",
     "pdfkit": "^0.16.0",
     "prisma": "^6.5.0",
+    "puppeteer": "^24.6.1",
     "qrcode": "^1.5.4"
   },
   "optionalDependencies": {
