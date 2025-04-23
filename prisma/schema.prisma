@@ -53,6 +53,7 @@ model Transactions {
 
 model Tickets {
   id             Int          @id @default(autoincrement())
+  bookingId      String   @unique
   eventId        String
   amount         String
   status         TicketStatus

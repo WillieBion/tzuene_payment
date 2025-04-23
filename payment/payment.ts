@@ -1,7 +1,7 @@
 import { api } from "encore.dev/api";
 import { PawaPayResponseDTO } from "../types/pawaPayRespDTO";
 import { createDeposit } from "../resources/payout";
-import { generateUUID, responseHandler } from "../resources/functions";
+import { generateTicketId, generateUUID, responseHandler } from "../resources/functions";
 import { sendTicketEmail } from "../email/email";
 import axios from "axios";
 import { ResponseDTO } from "../types/responseDTO";
@@ -10,25 +10,28 @@ import { prismaDBPrimary } from "../resources/appResources";
 import { Status, Tickets, TicketStatus } from "@prisma/client";
 import { Ticket } from "../types/tickets";
 import { env } from '../config';
+import { getAllEvents, getEventById } from "../resources/instances/queries/events";
 
 interface Request {
     amount: string
     msisdn: string
     orderId: string
     customer_id: string
+    event_id: string
+    event_uri: string
     tickets: Ticket[]
 }
 
 //Will need to change to Asyncronous implement
 export const payment = api({
-    method: 'POST', 
-    path: '/tzuene/payment', 
+    method: 'POST',
+    path: '/tzuene/payment',
     expose: true,
 }, async (payload: Request): Promise<ResponseDTO<PawaPayResponseDTO>> => {
     //Get payOut object
     const transactionId = generateUUID();
 
-    const { amount, customer_id, orderId, msisdn, tickets } = payload as Request
+    const { amount, customer_id, orderId, msisdn, tickets, event_id, event_uri } = payload as Request
 
     const depositObj = createDeposit(transactionId, amount, msisdn, orderId, customer_id, 'Payment for Ticket');
 
@@ -39,6 +42,8 @@ export const payment = api({
 
     console.log("URL", URL);
     // console.log("Token", token);
+    // const events = await getAllEvents();
+    // console.log("Events", events?.cityId);
 
     try {
         const { status, data } = await axios.post<PawaPayResponseDTO>(URL, depositObj, {
@@ -72,39 +77,49 @@ export const payment = api({
             console.log('creating ticketData ========================>')
             const ticketData = tickets.map((ticket) => {
                 return {
-                    eventId: ticket.eventId,
+                    eventId: event_id,
                     amount: ticket.amount,
                     status: TicketStatus.VALID,
+                    bookingId: generateTicketId(),
                     ticketType: ticket.ticketType,
                     transactionId: storeData.id,
                 }
             })
 
-            if ((data.status as Status) === 'ACCEPTED'){
-                
-            console.log('Storing TicketData ========================>');
-            const ticketStore = await prismaDBPrimary.tickets.createMany({
-                data: ticketData
-            })
-            console.log('TicketData stored in DB ========================>', ticketStore);
-            
-            // Trigger email sending asynchronously
-            const ticketPDFData = ticketData.map((ticket) => ({
-                ticketId: `${ticket.transactionId}`, // Create a unique ticket ID
-                eventId: ticket.eventId,
-                ticketType: ticket.ticketType,
-                amount: ticket.amount
-            }))
+            if ((data.status as Status) === 'ACCEPTED') {
 
-            try {
-                // Get customer email from database
-                // const customer = await prismaDBPrimary.user.findUnique({
-                //     where: { 
-                //         id: parseInt(customer_id) // Convert string ID to number
-                //     }
-                // })
+                console.log('Storing TicketData ========================>');
+                const ticketStore = await prismaDBPrimary.tickets.createMany({
+                    data: ticketData
+                })
+                console.log('TicketData stored in DB ========================>', ticketStore);
 
-               
+                //Retrieve event details
+                const event = await getEventById(event_id);
+
+                // Trigger email sending asynchronously
+                const ticketPDFData = ticketData.map((ticket) => ({
+                    ticketId: `${ticket.transactionId}`, // Create a unique ticket ID
+                    eventId: ticket.eventId,
+                    bookingId: ticket.bookingId,
+                    event_uri,
+                    ticketType: ticket.ticketType,
+                    amount: ticket.amount,
+                    event
+                }))
+
+
+                console.log(ticketPDFData);
+
+                try {
+                    // Get customer email from database
+                    // const customer = await prismaDBPrimary.user.findUnique({
+                    //     where: { 
+                    //         id: parseInt(customer_id) // Convert string ID to number
+                    //     }
+                    // })
+
+
                     // Fire and forget email sending
                     sendTicketEmail({
                         customerId: customer_id,
@@ -113,10 +128,10 @@ export const payment = api({
                     }).catch((error: Error) => {
                         console.error('Failed to send ticket email:', error)
                     })
-                
-            } catch (error) {
-                console.error('Error getting customer details:', error)
-            }
+
+                } catch (error) {
+                    console.error('Error getting customer details:', error)
+                }
             }
             //    const dataToRespond = {statusCode: HttpStatus.OK, data}
             // const response: ResponseDTO<PawaPayResponseDTO>= {

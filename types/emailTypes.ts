@@ -21,6 +21,9 @@ export interface TicketEmailData {
 export interface TicketPDFData {
     ticketId: string
     eventId: string
+    event_uri: string
     ticketType: string
     amount: string
+    bookingId: string
+    event: any
 }

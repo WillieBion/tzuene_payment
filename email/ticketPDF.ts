@@ -9,13 +9,14 @@ async function getTicketHtml(ticket: TicketPDFData): Promise<string> {
   // Use your real data here!
 
   // I need to get event information from Mongo DB event.
-   
+
 
   // I need to call encryption function first <====> Check events service for code ref
 
   //After that I will call the generate QRcode function to generate with the encrypted data
-    const qrCodeURI = await generateQrCode(JSON.stringify(ticket)) as string
-    // console.log("URI: =====> ", qrCodeURI)
+  const { event, ...dataToGenerateQrCode } = ticket
+  const qrCodeURI = await generateQrCode(JSON.stringify(dataToGenerateQrCode)) as string
+  // console.log("URI: =====> ", qrCodeURI)
 
 
 
@@ -106,9 +107,11 @@ async function getTicketHtml(ticket: TicketPDFData): Promise<string> {
         }
         .support {
           text-align: center;
-          color: #6a11cb;
+          /* color: #6a11cb; */
           margin: 8px 0 0 0;
           font-size: 0.95em;
+          /* background: #f6f7fb; */
+          /* padding: 5px 24px; */
         }
         .footer {
           background: #ffe2e2;
@@ -116,20 +119,33 @@ async function getTicketHtml(ticket: TicketPDFData): Promise<string> {
           text-align: center;
           padding: 12px 0 2px 0;
           font-size: 0.95em;
-          margin-top: 18px;
+          /* margin-top: 0; */
         }
         .download-btn {
           display: block;
-          width: 90%;
-          margin: 20px auto 24px auto;
+          width: 100%;
+          margin: 30px auto 0px auto;
           background: #d32f2f;
           color: #fff;
           text-align: center;
           padding: 12px 0;
-          border-radius: 24px;
+          /* border-radius: 24px; */
           text-decoration: none;
           font-weight: bold;
           font-size: 1.1em;
+        }
+        .contact-us {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          color: #000;
+
+        }
+        .bottom-content {
+          display: flex;
+          flex-direction: column;
+
         }
       </style>
     </head>
@@ -138,32 +154,35 @@ async function getTicketHtml(ticket: TicketPDFData): Promise<string> {
         <div class="header">
           <img class="event-img" src="https://images.unsplash.com/photo-1417325384643-aac51acc9e5d" alt="Event Image"/>
           <div class="event-details">
-            <h2>Alice Chengelo</h2>
-            <div class="subtitle">Sing for all</div>
-            <div class="datetime">Sat, 17 Dec | 5:15 PM</div>
-            <div class="location">East Park Mall · Lusaka</div>
+            <h2>${ticket.event.name}</h2>
+<!-- <div class="subtitle">${ticket.event.description}</div> --!>
+            <div class="datetime">${ticket.event.date} | ${ticket.event.time}</div>
+            <div class="location">${ticket.event.location}</div>
           </div>
         </div>
         <div class="info-section">
-          <!-- <div class="label">Admit:</div>
-          <div class="value">John Doe</div>
-          <div class="label">Tickets:</div>
-          <div class="value">4</div> -->
           <div class="label">Venue:</div>
-          <div class="value">Open Gardens</div>
-          <!-- <div class="label">Seats:</div>
-          <div class="value">M3, M4, M5, M8</div> -->
+          <div class="value">${ticket.event.location}</div>
         </div>
         <div class="qr-section">
-          <img src=${qrCodeURI} width="160" height="160" alt="QR Code"/>
+          <img src="${qrCodeURI}" width="160" height="160" alt="QR Code"/>
         </div>
-        <div class="booking-id">Booking ID: ${ticket.ticketId}</div>
-        <div class="support">Contact support</div>
-        <a href="#" class="download-btn">Download Ticket</a>
-        <div class="footer">
-          Cancellation unavailable: cut off time of 5 hrs<br/>
-          before showtime has passed
+        <div class="booking-id">Booking ID: ${ticket.bookingId}</div>
+        <div class="support">
+          <a href="https://tzuene.byte-hub.co/contact-us" class="contact-us">Contact support
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24px">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+            </svg>
+          </a>
         </div>
+        <div class="">
+          <a href="${ticket.event_uri}" class="download-btn">View Event</a>
+          <div class="footer">
+            Cancellation unavailable: cut off time of 5 hrs<br/>
+            before showtime has passed
+          </div>
+        </div>
+       
       </div>
     </body>
     </html>

@@ -1,4 +1,5 @@
 import { PrismaClient as PrismaDBPrimary } from "@prisma/client";
+import mongoose from "mongoose";
 // import { PrismaClient as PrismaDBPrimary } from "../prisma/generated/db1";
 // import { PrismaClient as PrismaDBSecondary } from "../prisma/generated/db2";
 
@@ -14,7 +15,7 @@ const prismaDBPrimary = new PrismaDBPrimary();
 
 
 
-export { prismaDBPrimary};
+export { prismaDBPrimary, mongoose};
 // module.exports = {
 //     prismaDBPrimary,
 //     prismaDBSecondary,
