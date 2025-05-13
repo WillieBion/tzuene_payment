@@ -8,14 +8,23 @@ import { generateTicketPDF } from './ticketPDF'
 dotenv.config()
 
 // Create reusable transporter
+// const transporter = nodemailer.createTransport({
+//     host: process.env.SMTP_HOST,
+//     port: parseInt(process.env.SMTP_PORT || '587'),
+//     secure: process.env.SMTP_SECURE === 'true',
+//     auth: {
+//         user: process.env.SMTP_USER,
+//         pass: process.env.SMTP_PASS,
+//     },
+//     logger: true,
+//     // debug: true
+// })
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
+    service: 'gmail',
     auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-    },
+        user: 'tzuene.customerservice@gmail.com',
+        pass: 'veko rodm ewkv ghzh'
+    }
 })
 
 // Async API to send ticket emails
@@ -30,7 +39,7 @@ export const sendTicketEmail = api({
         tickets.map(async (ticket) => {
             const pdf = await generateTicketPDF(ticket)
             return {
-                filename: `ticket-${ticket.ticketId}.pdf`,
+                filename: `ticket-${ticket.bookingId}.pdf`,
                 content: pdf,
                 contentType: 'application/pdf'
             }

@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 import { TicketPDFData } from '../types/emailTypes';
 import { generateQrCode } from '../resources/qrCode/generateQrCode';
+import { cryptoEncryption } from '../resources/security/encryptor';
 
 
 
@@ -14,8 +15,10 @@ async function getTicketHtml(ticket: TicketPDFData): Promise<string> {
   // I need to call encryption function first <====> Check events service for code ref
 
   //After that I will call the generate QRcode function to generate with the encrypted data
-  const { event, ...dataToGenerateQrCode } = ticket
-  const qrCodeURI = await generateQrCode(JSON.stringify(dataToGenerateQrCode)) as string
+  // const { event, ...dataToGenerateQrCode } = ticket
+
+  const encryptedData = cryptoEncryption(JSON.stringify(ticket.eventId), process.env.PUBLIC_KEY!)
+  const qrCodeURI = await generateQrCode(encryptedData) as string
   // console.log("URI: =====> ", qrCodeURI)
 
 
@@ -35,7 +38,7 @@ async function getTicketHtml(ticket: TicketPDFData): Promise<string> {
         }
         .ticket-card {
           background: #fff;
-          width: 420px;
+          width: 350px;
           margin: 30px auto;
           border-radius: 20px;
           box-shadow: 0 8px 32px rgba(44,62,80,0.12);
@@ -89,6 +92,7 @@ async function getTicketHtml(ticket: TicketPDFData): Promise<string> {
         .info-section .value {
           font-size: 1.1em;
           margin-bottom: 8px;
+          text-align: center;
         }
         .qr-section {
           text-align: center;
@@ -157,7 +161,7 @@ async function getTicketHtml(ticket: TicketPDFData): Promise<string> {
             <h2>${ticket.event.name}</h2>
 <!-- <div class="subtitle">${ticket.event.description}</div> --!>
             <div class="datetime">${ticket.event.date} | ${ticket.event.time}</div>
-            <div class="location">${ticket.event.location}</div>
+            <div class="location">${ticket.event.cityId}</div>
           </div>
         </div>
         <div class="info-section">

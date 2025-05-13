@@ -1,34 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  // engineType    = "library"
-  // //  previewFeatures = ["clientExtensions"]
-  // // Disable fs access
-  // binaryTargets = ["native"]
-  // extensions = ["dataProxy"]
-  // output        = "./generated/db1"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-enum Status {
-  ACCEPTED
-  REJECTED
-  DUPLICATE_IGNORED
-}
-
-enum TicketStatus {
-  VALID
-  INVALID
-  EXPIRED
 }
 
 model User {
@@ -44,23 +20,23 @@ model Transactions {
   transactionId String    @unique
   orderId       String
   amount        String
-  status        Status
+  createdAt     DateTime  @default(now())
   rejectCode    String?
   rejectReason  String?
-  createdAt     DateTime  @default(now())
+  status        Status
   tickets       Tickets[]
 }
 
 model Tickets {
-  id             Int          @id @default(autoincrement())
-  bookingId      String   @unique
-  eventId        String
-  amount         String
-  status         TicketStatus
-  ticketType     String
-  createdAt      DateTime     @default(now())
-  Transactions   Transactions @relation(fields: [transactionId], references: [id])
+  eventId       String
+  amount        String
+  status        TicketStatus
+  createdAt     DateTime     @default(now())
+  ticketType    String
   transactionId Int
+  bookingId     String       @unique
+  id            Int          @id @default(autoincrement())
+  Transactions  Transactions @relation(fields: [transactionId], references: [id])
 }
 
 model EmailSent {
@@ -70,4 +46,16 @@ model EmailSent {
   status    String
   metadata  Json
   createdAt DateTime @default(now())
+}
+
+enum Status {
+  ACCEPTED
+  REJECTED
+  DUPLICATE_IGNORED
+}
+
+enum TicketStatus {
+  VALID
+  INVALID
+  EXPIRED
 }

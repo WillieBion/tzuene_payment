@@ -9,6 +9,7 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.5.7",
     "@types/qrcode": "^1.5.5",
     "typescript": "^5.2.2",
@@ -19,6 +20,7 @@
     "@types/nodemailer": "^6.4.17",
     "@types/pdfkit": "^0.13.9",
     "axios": "^1.8.4",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.7",
     "encore.dev": "^1.46.1",
     "mongoose": "^8.13.2",
