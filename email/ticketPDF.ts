@@ -195,7 +195,7 @@ async function getTicketHtml(ticket: TicketPDFData): Promise<string> {
 
 export async function generateTicketPDF(ticket: TicketPDFData): Promise<Buffer> {
   const html = await getTicketHtml(ticket);
-  const browser = await (puppeteer as any).launch({ headless: 'new' }); // headless: true in most puppeteer versions
+  const browser = await (puppeteer as any).launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] }); // headless: true in most puppeteer versions
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: 'networkidle0' });
   const pdfBuffer = await page.pdf({
