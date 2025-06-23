@@ -56,12 +56,16 @@ export const payment = api({
         if (status === 200) {
             console.log('Payment successful');
             //At this point I will need to store this in the DB.
+            //Retrieve event details
+            const event = await getEventById(event_id);
+            console.log("Event", event);
             const dataToStore = {
                 customerId: customer_id,
                 msisdn,
                 transactionId,
                 orderId,
                 amount,
+                organizationId: event?.companyId,
                 status: data.status as Status,
                 rejectCode: data.rejectionReason?.rejectionCode || null,
                 rejectReason: data.rejectionReason?.rejectionMessage || null,
@@ -86,6 +90,8 @@ export const payment = api({
                 }
             })
 
+
+
             if ((data.status as Status) === 'ACCEPTED') {
 
                 console.log('Storing TicketData ========================>');
@@ -94,8 +100,7 @@ export const payment = api({
                 })
                 console.log('TicketData stored in DB ========================>', ticketStore);
 
-                //Retrieve event details
-                const event = await getEventById(event_id);
+
 
                 // Trigger email sending asynchronously
                 const ticketPDFData = ticketData.map((ticket) => ({

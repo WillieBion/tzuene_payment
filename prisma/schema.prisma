@@ -14,17 +14,18 @@ model User {
 }
 
 model Transactions {
-  id            Int       @id @default(autoincrement())
-  customerId    String
-  msisdn        String
-  transactionId String    @unique
-  orderId       String
-  amount        String
-  createdAt     DateTime  @default(now())
-  rejectCode    String?
-  rejectReason  String?
-  status        Status
-  tickets       Tickets[]
+  id             Int       @id @default(autoincrement())
+  customerId     String
+  organizationId String?
+  msisdn         String
+  transactionId  String    @unique
+  orderId        String
+  amount         String
+  createdAt      DateTime  @default(now())
+  rejectCode     String?
+  rejectReason   String?
+  status         Status
+  tickets        Tickets[]
 }
 
 model Tickets {
