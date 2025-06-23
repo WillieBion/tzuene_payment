@@ -65,7 +65,7 @@ export const payment = api({
                 transactionId,
                 orderId,
                 amount,
-                organizationId: event?.companyId,
+                organizationId: event?.companyId?.toString(),
                 status: data.status as Status,
                 rejectCode: data.rejectionReason?.rejectionCode || null,
                 rejectReason: data.rejectionReason?.rejectionMessage || null,

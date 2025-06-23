@@ -16,7 +16,7 @@ export function generateUUID(): string {
 // Generate ticket ID
 export function generateTicketId(): string {
     const prefix = "0000"
-    const length = 6;
+    const length = 8;
     const digits = "0123456789";
     let receipt = ""
 
