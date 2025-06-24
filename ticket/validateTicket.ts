@@ -7,7 +7,7 @@ import HttpStatus from "../resources/httpStatusCode";
 
 interface Request {
     event_id: string
-    bookind_id: string
+    booking_id: string
 }
 
 interface Response {
@@ -22,19 +22,19 @@ export const validateTicket = api({
 }, async (payload: Request): Promise<ResponseDTO<Response>> => {
 
     try {
-        const { event_id, bookind_id } = payload
+        const { event_id, booking_id } = payload
 
         // const ticket = await prismaDBPrimary.tickets.findUnique({
         //     where: {
         //         eventId: event_id,
-        //         bookingId: bookind_id
+        //         bookingId: booking_id
         //     }
         // })
         // I want to update ticket status to invalid
         const ticketUpdate = await prismaDBPrimary.tickets.update({
             where: {
                 eventId: event_id,
-                bookingId: bookind_id
+                bookingId: booking_id
             },
             data: {
                 status: 'INVALID'
